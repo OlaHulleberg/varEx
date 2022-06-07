@@ -20,11 +20,12 @@ function varEx(inputString, inputObject) {
                 if(b1>=0 && b1<b2) {
                     openBrackets++;
                     currentBracket = b1+1;
-                    continue;
                 } else if(b2>=0 && (b2<b1 || b1<0)) {
                     openBrackets--;
                     currentBracket = b2+1;
-                    continue;
+                } else {
+                    // This part should only ever be reached if there's an incomplete variable block - e.g $[array[i]
+                    openBrackets = 0;
                 }
             }
 
