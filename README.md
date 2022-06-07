@@ -22,7 +22,7 @@
 
 <div align="center">
   <sub>Built with ❤︎ by
-  <a href="https://github.com/OlaHulleberg">Ola Hulleberg</a>,
+  <a href="https://github.com/OlaHulleberg">Ola Hulleberg</a>
 </div>
 
 <h2>Table of Contents</h2>
