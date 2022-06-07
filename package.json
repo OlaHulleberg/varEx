@@ -1,6 +1,6 @@
 {
   "name": "varex",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Variable Expression - Resolve variables inside strings",
   "main": "index.js",
   "repository": "OlaHulleberg/varEx",
