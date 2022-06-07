@@ -1,0 +1,28 @@
+{
+  "name": "varex",
+  "version": "1.0.0",
+  "description": "Variable Expression - Resolve variables inside strings",
+  "main": "index.js",
+  "repository": "OlaHulleberg/varEx",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "varex",
+    "variable",
+    "expression",
+    "resolve"
+  ],
+  "files": [
+    "LICENSE.md",
+    "index.js"
+  ],
+  "author": "Ola",
+  "contributors": [
+    "Ola Hulleberg <ohulleberg@gmail.com>"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^10.0.0"
+  }
+}
