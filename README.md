@@ -40,7 +40,7 @@ npm i varex
 
 Include in project
 ```javascript
-const varEx = require('varex').varEx;
+const { varEx } = require('varex');
 ```
 </p>
 
@@ -55,7 +55,7 @@ varEx("Any string you want plus a $[variable] block", objectToResolveFrom);
 
 ```javascript
 // Include varEx
-const varEx = require('varex').varEx;
+const { varEx } = require('varex');
 
 // This is the object we use to resolve variables
 const object = {

@@ -1,5 +1,5 @@
 // Include varEx
-const varEx = require('varex').varEx;
+const { varEx } = require('varex');
 
 // This is the object we use to resolve variables
 const object = {

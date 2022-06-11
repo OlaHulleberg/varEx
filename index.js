@@ -49,7 +49,7 @@ function varEx(inputString, inputObject) {
             // Replace all table indexes (and quotes) with . so we can split it into variable blocks
             // keep only value between
             // ["'`] group should be optional (so we also get replace index numbers)
-            variable = variable.replace(/\[["'`]?(.*)["'`]?\]/g, ".$1");
+            variable = variable.replace(/\[["'`]?(\w*)["'`]?\]/g, ".$1");
 
             // Now we split the variable by . to resolve child elements if provided          
             const variableBlocks = variable.split(".");
