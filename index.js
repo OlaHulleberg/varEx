@@ -11,7 +11,7 @@ function varEx(inputString, inputObject) {
         // Check if variable block is semi-valid (Contains at least 1 opening bracket [ and 1 closing bracket ])
         // Also check if first opening bracket [ comes before the last closing bracket ]
         // Otherwise, this is not a variable block
-        if(firstBracket !== secondBracket && firstBracket < lastBracket) {
+        if(firstBracket == 0 && firstBracket !== secondBracket && firstBracket < lastBracket) {
             // Start with 1 open bracket by default, find everything between this open bracket
             var currentBracket = firstBracket+1;
             var openBrackets = 1;
@@ -68,6 +68,9 @@ function varEx(inputString, inputObject) {
             // Add all the resolved values to the resultString
             return prevBlock + resolvedValue + suffixString;
         } else {
+            if(firstBracket != 0) {
+                newBlock = "$"+newBlock;
+            }
             // The block is just a string
             return prevBlock + newBlock;
         }

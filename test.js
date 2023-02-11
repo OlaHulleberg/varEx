@@ -14,6 +14,7 @@ const testObj = {
     contributors: [
         "Ola"
     ],
+    type: "free",
 }
 
 describe('varEx', function () {
@@ -64,6 +65,13 @@ describe('varEx', function () {
         it('should be able to handle variables with underscores', function() {
             assert.equal("The repository URL is https://github.com/OlaHulleberg/varEx", varEx("The repository URL is $[info.release['git_repo']]", testObj));
             assert.equal("The repository URL is https://github.com/OlaHulleberg/varEx", varEx("The repository URL is $[info.release.git_repo]", testObj));
+        });
+    });
+
+    // $ in string
+    describe('#signInString', function() {
+        it('should be able to handle text that includes $ signs', function() {
+            assert.equal("This package costs $0.00, and is therefore free.", varEx("This package costs $0.00, and is therefore $[type].", testObj));
         });
     });
 });
