@@ -128,4 +128,14 @@ describe("varEx", function () {
       );
     });
   });
+
+  describe("#invalid", function () {
+    // Non-closed invalid blocks
+    it("should be able to handle non-closed invalid blocks", function () {
+      assert.equal(
+        "The repository URL is $[info.release[`git_repo`",
+        varEx("The repository URL is $[info.release[`git_repo`", testObj)
+      );
+    });
+  });
 });
