@@ -137,5 +137,13 @@ describe("varEx", function () {
         varEx("The repository URL is $[info.release[`git_repo`", testObj)
       );
     });
+
+    // Partial closed invalid blocks
+    it("should be able to handle partially closed invalid blocks", function () {
+      assert.equal(
+        "The repository URL is $[info.release[`git_repo`]",
+        varEx("The repository URL is $[info.release[`git_repo`]", testObj)
+      );
+    });
   });
 });
