@@ -1,4 +1,7 @@
 function varEx(inputString, inputObject) {
+  // Early return if there are no $[] blocks
+  if (!inputString.includes("$[")) return inputString;
+
   // Find all $[] blocks, and run a function for each block found.
   // Returns a complete string where all VarEx blocks have been parsed
   return inputString.replace(/\$\[(['"`\w[\].]+)\]/g, (_, key) => {
@@ -7,9 +10,7 @@ function varEx(inputString, inputObject) {
 
     // Check that we have equal amounts of open brackets [ as closing brackets ]
     // This allows us to check if the VarEx block is complete
-    const openBracketCount = (key.match(/\[/g) || []).length; // Number of open brackets
-    const closeBracketCount = (key.match(/\]/g) || []).length; // Number of closed brackets
-    if (openBracketCount !== closeBracketCount) return `$[${key}]`; // Perform above check, and return key as it was parsed if there are brackets left open
+    if (key.split("[").length !== key.split("]").length) return `$[${key}]`;
 
     // Replace all array blocks [] with .
     // eg. table['a'] becomes table.a
