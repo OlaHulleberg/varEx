@@ -4,7 +4,7 @@ VarEx is optimized for real-world template processing scenarios. Below are perfo
 
 ## Test Environment
 - **Node.js**: v22.19.0 (LTS)
-- **Hardware**: Standard development machine
+- **Hardware**: MacBook Pro M2 Pro (12-core), 32GB RAM
 - **Iterations**: 100,000 per test (with 1,000 warmup iterations)
 
 ## Results
@@ -58,10 +58,12 @@ For typical use cases:
 
 ## Recommendations
 
+- **Zero dependencies**: Super lightweight package that just works out of the box
 - **Use VarEx when**: Template complexity makes it worthwhile (vs simple concatenation)
 - **Avoid for**: Single variable substitution (use template literals instead)
 - **Optimal for**: 2-10 variables per template with moderate nesting
 - **Consider alternatives for**: >20 variables per template or real-time rendering at scale
+- **Perfect for**: Quick solutions without heavy configuration or setup
 
 ## Running Benchmarks
 

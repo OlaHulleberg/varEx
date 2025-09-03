@@ -46,6 +46,7 @@ varEx("Hello $[user.name], you have $[notifications[0]] new messages!", data)
 - Variables are unknown at template-writing time
 - Need deep object/array access in templates
 - Want clean separation between templates and data
+- Need a lightweight, zero-dependency solution that works out of the box
 
 **❌ Don't use VarEx when:**
 
