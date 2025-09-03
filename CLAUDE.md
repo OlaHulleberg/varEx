@@ -55,4 +55,4 @@ Invalid blocks (unmatched brackets) are returned as-is without processing.
 
 ## CI/CD
 
-CircleCI configuration runs tests on Node.js 22.19.0 (LTS) for all commits and PRs.
+GitHub Actions runs tests on Node.js 22.19.0 (LTS) for all commits and PRs.
