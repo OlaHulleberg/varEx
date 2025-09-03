@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: cimg/node:18.3.0
+      - image: cimg/node:22.19.0
     steps:
       - checkout
       - run: echo "Running tests"

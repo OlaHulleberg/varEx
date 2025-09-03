@@ -1,7 +1,7 @@
 <h1 align="center">VarEx</h1>
 
 <div align="center">
-  Let Variable Expressions brighten up your project ⭐
+  Simple variable resolution for template strings using `$[variable]` syntax ⭐
 </div>
 
 <div align="center">
@@ -17,6 +17,10 @@
     <a href="https://github.com/OlaHulleberg/varEx/blob/main/examples/simple.js">
       Example
     </a>
+    <span> | </span>
+    <a href="BENCHMARKS.md">
+      Performance
+    </a>
   </h3> 
 </div>
 
@@ -25,113 +29,260 @@
   <a href="https://github.com/OlaHulleberg">Ola Hulleberg</a>
 </div>
 
-<h2>Table of Contents</h2>
-
-- [Goal](#goal)
-- [Install](#install)
-- [Usage](#usage)
-- [Why, or when to use this?](#why)
-
-<h3>Goal</h3>
-<p align="center"><strong>VarEx aims to solve the problem of resolving variables you don't yet have access to (but know you will), when writing the template. </strong></p>
-
-<h3>Install</h3>
-
-Install package:
-
-```nodejs
-npm i varex
-```
-
-</p>
-
-<h3>Usage</h3>
-
-<p>
-Supply string and object to resolve from
+---
 
 ```javascript
-const { varEx } = require("varex");
-
-varEx("Any string you want plus a $[variable] block", objectToResolveFrom);
+varEx("Hello $[user.name], you have $[notifications[0]] new messages!", data)
+// → "Hello John, you have 5 new messages!"
 ```
 
-<h4>Example</h4>
+---
+
+## When to Use VarEx
+
+**✅ Use VarEx when:**
+
+- Building reusable templates (config files, reports, dynamic tables)
+- Variables are unknown at template-writing time
+- Need deep object/array access in templates
+- Want clean separation between templates and data
+
+**❌ Don't use VarEx when:**
+
+- Variables are known at runtime → use template literals `${variable}`
+- Only simple concatenation → use `+` or template literals
+- Performance-critical single variable → direct access is faster
+
+---
+
+## Quick Start
+
+```bash
+npm install varex
+```
 
 ```javascript
-// Include varEx
-const { varEx } = require("varex");
+const { varEx } = require('varex');
 
-// This is the object we use to resolve variables
-const object = {
-  var1: "Example",
-  var2: "Yet another one",
-  var3: "You can even include [] brackets here, even $[variable blocks] doesn't break this",
-  varObj: {
-    var1: "Supports nesting as well!",
-    varArray: ["Need arrays? Have at it!"],
-  },
+const config = {
+  server: { host: 'localhost', port: 3000 },
+  users: [{ name: 'Alice', role: 'admin' }]
 };
 
-// Output the result
-console.log(
-  varEx(
-    "This is an $[var1], and here is $[var2]. $[var3]. $[varObj.var1] $[varObj.varArray[0]]",
-    object
-  )
-);
+varEx('Server: $[server.host]:$[server.port]', config);
+// → "Server: localhost:3000"
+
+varEx('Welcome $[users[0].name] ($[users[0].role])', config);  
+// → "Welcome Alice (admin)"
 ```
 
-</p>
+---
 
-<h3 id="why">Why use this?</h3>
+## Syntax Reference
 
-<p>
-<strong>VarEx is ideal for cases like dynamic table formatting, where you want to define a format upfront and apply it to any input data.</strong>
-</p>
+| Pattern | Example | Result |
+|---------|---------|--------|
+| **Object property** | `$[user.name]` | Access nested properties |
+| **Array index** | `$[items[0]]` | Get array element |
+| **String keys** | `$[config['api-key']]` | Keys with special chars |
+| **Deep nesting** | `$[app.db.users[0].profile.name]` | Complex paths |
+| **Multiple quotes** | `$[obj["key"]]`, `$[obj['key']]`, `$[obj[\`key\`]]` | Any quote style |
 
-<p>
-Let me start of by saying that if you simply want to resolve a variable or function into a string, you should just use Javascript's built-in template literals ${}
-
-**VarEx** only aims to solve the problem of resolving variables you don't yet have access to (but know you will), when writing the template.
-
-</p>
-<p>
-This function was originally created because I ran into a problem with table formatting.
-I didn't want to create an entire function just to format data at runtime into a table, and then have to repeat this process for another.
-I wanted to be able to create a simple table component where you could specify beforehand how your data was supposed to be formatted, and that it would work with any input data whatsoever.
-
-This is the table component that spawned the need for this function:
+**Invalid expressions return as-is:**
 
 ```javascript
-<List
-  data={{
-    headers: [
-      {
-        title: "Coffee Type",
-        data: " ($[bean_type.product_name.grams_of_coffee] g)",
-      },
-      {
-        title: "Grinding",
-        data: "$[grinding_setting]",
-      },
-      {
-        title: "Water",
-        data: "$[water_in_liter] l",
-      },
-    ],
-    items: this.state.items,
-  }}
-  filters={this.state.filters}
+varEx('Broken: $[unclosed[', data) // → "Broken: $[unclosed["
+```
+
+---
+
+## Real-World Examples
+
+### Config-Based Templates
+
+**Define templates in config (no data available yet):**
+
+```javascript
+// config.json - written by developers, no runtime data
+{
+  "notifications": {
+    "welcome": "Welcome $[user.name], you have $[stats.unreadCount] messages",
+    "storage": "Using $[usage.current] of $[usage.limit] ($[usage.percentage]%)",
+    "status": "Server: $[server.status] | DB: $[database.latency]ms"
+  }
+}
+```
+
+**Apply templates when data arrives from API:**
+```javascript
+const templates = require('./config.json').notifications;
+
+// Data comes from API call
+fetch('/api/user/dashboard')
+  .then(res => res.json())
+  .then(data => {
+    // Now we have: { user: {name: "Alice"}, stats: {unreadCount: 3}, ... }
+    
+    const welcomeMsg = varEx(templates.welcome, data);
+    const storageMsg = varEx(templates.storage, data);
+    
+    showNotification(welcomeMsg); // "Welcome Alice, you have 3 messages"
+  });
+```
+
+### Component Templates with Dynamic Units
+
+**Component defined without knowing what data it will display:**
+
+```javascript
+// ProductDisplay.js - written before knowing what products exist
+const DISPLAY_FORMATS = {
+  weight: '$[value] $[unit]',           // Could be "2.5 kg" or "5 lbs" 
+  volume: '$[amount] $[unit]',          // Could be "500 ml" or "2 liters"
+  price: '$$$[price] $[currency]',      // Could be "$10 USD" or "€8 EUR"
+  stock: '$[count] $[item] remaining'   // Could be "5 bottles remaining"
+};
+
+function ProductDisplay({ product, format }) {
+  // Product data comes from API, format chosen by user
+  return varEx(DISPLAY_FORMATS[format], product);
+}
+
+// Usage - data arrives later from different sources:
+<ProductDisplay 
+  product={apiData}     // {value: 2.5, unit: "kg"} 
+  format="weight" 
 />
+// Renders: "2.5 kg"
 ```
 
-The part where **VarEx** came in handy was in the data part, where we try to resolve the data with a certain format. Sure this doesn't need a function like **VarEx** to begin with, but having to constantly repeat simple but slightly different table formatting functions each time, eventually taints the codebase. I wanted a reusable function to format each different table with an already defined format config.
+### Report Generation from Database
+
+**Template written before database query:**
 
 ```javascript
-data: " ($[grams_of_coffee] g)";
+// report-templates.js - defined by business team
+const REPORT_TEMPLATES = {
+  daily: 'Daily Sales: $[sales.total] ($[sales.count] orders, avg: $[sales.average])',
+  user: 'User $[user.id]: $[user.orders] orders, $$$[user.revenue] revenue',
+  error: 'Error in $[error.service] at $[error.timestamp]: $[error.message]'
+};
+
+// Later, when generating reports from database:
+async function generateDailyReport(date) {
+  const salesData = await db.query('SELECT * FROM daily_sales WHERE date = ?', date);
+  
+  // Data structure unknown when template was written
+  return varEx(REPORT_TEMPLATES.daily, salesData);
+}
+
+// Similarly for error logging:
+function logError(service, error) {
+  const errorData = {
+    error: { service, timestamp: Date.now(), message: error.message }
+  };
+  
+  console.log(varEx(REPORT_TEMPLATES.error, errorData));
+}
 ```
 
-Using **VarEx** it really was as simple as creating a table component that runs **VarEx()** on every item displayed. No need to create a custom switch case for displaying water in liters, coffee beans in grams and so on.
+### Dynamic Table Configuration
 
-</p>
+**Table columns defined before knowing data structure:**
+
+```javascript
+// table-config.json - defines how to display any user data
+{
+  "userTable": {
+    "columns": [
+      {
+        "header": "User", 
+        "template": "$[name] ($[email])"
+      },
+      {
+        "header": "Activity",
+        "template": "$[stats.loginCount] logins, last: $[lastLogin]"  
+      },
+      {
+        "header": "Storage",
+        "template": "$[usage.used]/$[usage.total] GB"
+      }
+    ]
+  }
+}
+
+// Component renders any data matching the template structure:
+function DataTable({ config, data }) {
+  return (
+    <table>
+      {data.map(row => (
+        <tr>
+          {config.columns.map(col => (
+            <td>{varEx(col.template, row)}</td>
+          ))}
+        </tr>
+      ))}
+    </table>
+  );
+}
+
+// Works with any API response that matches template structure
+```
+
+---
+
+## Performance
+
+VarEx handles most use cases efficiently:
+
+- **Simple variables**: ~1.6M ops/second  
+- **Nested objects**: ~700K ops/second
+- **Array access**: ~650K ops/second  
+- **Complex templates**: ~300K ops/second
+
+**[📊 Full Performance Benchmarks](BENCHMARKS.md)**
+
+For high-frequency operations (>1M/sec), consider direct property access or caching resolved templates.
+
+---
+
+## Limitations
+
+- **No functions**: `$[user.getName()]` won't work
+- **No expressions**: `$[count + 1]` isn't supported
+- **No conditionals**: No if/else logic
+- **String keys only**: Array indices must be numbers or strings
+- **Bracket validation**: Malformed `$[obj[key` returns as-is
+
+**For complex logic, use a proper templating engine like Handlebars or Mustache.**
+
+---
+
+## API Reference
+
+### `varEx(template, data)`
+
+**Parameters:**
+
+- `template` (string): Template with `$[variable]` placeholders
+- `data` (object): Data object to resolve variables from
+
+**Returns:** String with variables resolved
+
+**Behavior:**
+
+- Missing variables return empty string
+- Invalid brackets return unchanged  
+- Handles `null`/`undefined` gracefully
+- Supports nested objects and arrays
+
+---
+
+## Contributing
+
+Run tests: `npm test`  
+Run benchmarks: `npm run benchmark`
+
+---
+
+**Built for developers who value simplicity and performance.**
